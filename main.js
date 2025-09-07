@@ -11,31 +11,17 @@ context.configure({
   alphaMode: "opaque",
 });
 
-// Vertex + Fragment shaders (WGSL)
-const shaderCode = `
-@vertex
-fn vs_main(@builtin(vertex_index) idx : u32) -> @builtin(position) vec4f {
-  var pos = array<vec2f, 3>(
-    vec2f(0.0, 0.5),
-    vec2f(-0.5, -0.5),
-    vec2f(0.5, -0.5)
-  );
-  return vec4f(pos[idx], 0.0, 1.0);
-}
-
-@fragment
-fn fs_main() -> @location(0) vec4f {
-  return vec4f(0.6, 0.8, 0.4, 1.0);
-}`;
-
-// Create shader module
-const shaderModule = device.createShaderModule({ code: shaderCode });
+// Load shaders
+const vs = await (await fetch('vert.wgsl')).text();
+const fs = await (await fetch('frag.wgsl')).text();
+const vsModule = device.createShaderModule({ code: vs });
+const fsModule = device.createShaderModule({ code: fs });
 
 // Pipeline
 const pipeline = device.createRenderPipeline({
   layout: "auto",
-  vertex: { module: shaderModule, entryPoint: "vs_main" },
-  fragment: { module: shaderModule, entryPoint: "fs_main", targets: [{ format }] },
+  vertex: { module: vsModule, entryPoint: "mainVS" },
+  fragment: { module: fsModule, entryPoint: "mainPS", targets: [{ format }] },
   primitive: { topology: "triangle-list" },
 });
 
