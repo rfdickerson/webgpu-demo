@@ -1,8 +1,16 @@
+[[vk::binding(0, 0)]]
+cbuffer Params : register(b0, space0) { 
+    float4x4 rot; 
+}
+
+
 [shader("vertex")]
 float4 mainVS(uint vertexId : SV_VertexID) : SV_Position
 {
     float2 pos[3] = { float2(0, 0.5), float2(-0.5, -0.5), float2(0.5, -0.5) };
-    return float4(pos[vertexId], 0.0, 1.0);
+    float4 p = float4(pos[vertexId], 0, 1);
+    p = mul(rot, p);
+    return p;
 }
 
 [shader("fragment")]
